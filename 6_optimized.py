@@ -119,8 +119,8 @@ def update(dt):
     global angle
     global scale
 
-    angle += 10 * dt
-    return
+    #angle += 10 * dt
+    #return
 
     if keys[pyglet.window.key.LEFT]:
         print('LEFT')
