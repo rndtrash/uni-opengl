@@ -31,14 +31,17 @@ with open('hampter.obj') as f:
                 if s != None:
                     hampter_faces.append(
                         (
-                            # vertex normal
-                            (int(s.group(1)), int(s.group(3))),
-                            (int(s.group(4)), int(s.group(6))),
-                            (int(s.group(7)), int(s.group(9)))
+                            # vertex normal                        vertex pos
+                            (hampter_normals[int(s.group(3)) - 1], hampter_verts[int(s.group(1)) - 1]),
+                            (hampter_normals[int(s.group(6)) - 1], hampter_verts[int(s.group(4)) - 1]),
+                            (hampter_normals[int(s.group(9)) - 1], hampter_verts[int(s.group(7)) - 1])
                         )
                     )
                 else:
                     print("unknown", line)
+
+hampter_v_n_list = hampter_faces #np.asarray(hampter_faces, dtype=float).reshape((len(hampter_faces), 3, 2, 3))
+print(hampter_v_n_list)
 
 # Direct OpenGL commands to this window.
 w = 800
@@ -103,16 +106,14 @@ def on_draw():
     gl.glTranslatef(0.0, 0.0, -8.0)
     gl.glRotatef(angle, 0, -1, 0)
     gl.glScalef(scale, scale, scale)
-    for f in hampter_faces:
-        gl.glBegin(gl.GL_TRIANGLES)
+    gl.glBegin(gl.GL_TRIANGLES)
+    for f in hampter_v_n_list:
         for v in f:
-            vp = hampter_verts[v[0] - 1]
-            vn = hampter_normals[v[1] - 1]
-            gl.glNormal3f(*vn)
-            gl.glVertex3f(*vp)
-        gl.glEnd()
+            gl.glNormal3f(*v[0])
+            gl.glVertex3f(*v[1])
+    gl.glEnd()
 
-    print("FPS:", 1 / (time.time() - time_begin), "triangles:", len(hampter_faces))
+    print("FPS:", 1 / (time.time() - time_begin), "triangles:", len(hampter_v_n_list))
 
 def update(dt):
     global angle
