@@ -22,11 +22,11 @@ def makeSnowflakeBranch(x, y, radius, branches, max_depth, angle, radius_range, 
     this_pos = (math.cos(angle) * radius * 0.5 + x, math.sin(angle) * radius * 0.5 + y)
     points = [this_pos]
 
-    if current_depth != max_depth:
+    if current_depth != max_depth and branches > 1:
         for i in range(branches):
             new_angle = angle + (i * radius_range / (branches - 1)) - radius_range / 2
             points.append(this_pos)
-            points.extend(makeSnowflakeBranch(this_pos[0], this_pos[1], radius * 0.8, branches, max_depth, new_angle, radius_range * 0.8, current_depth + 1))
+            points.extend(makeSnowflakeBranch(this_pos[0], this_pos[1], radius * 0.4, branches // 2, max_depth, new_angle, radius_range * 2, current_depth + 1))
 
     return points
 
@@ -37,12 +37,15 @@ def makeSnowflake(radius, branches, depth):
     for i in range(branches):
         angle = i * angle_mult
         lines.append((0, 0))
-        lines.extend(makeSnowflakeBranch(0, 0, radius, branches, depth, angle, math.radians(75), 0))
+        lines.extend(makeSnowflakeBranch(0, 0, radius, branches // 2, depth, angle, angle_mult, 0))
     
     return lines
 
 def rgb(*args):
     return [i / 255 for i in args]
+
+
+snowflake = makeSnowflake(0.5, 6, 2)
 
 @window.event
 def on_draw():
@@ -55,7 +58,6 @@ def on_draw():
     gl.glColor3f(*rgb(21, 178, 235))
     gl.glLineWidth(2)
     gl.glBegin(gl.GL_LINES)
-    snowflake = makeSnowflake(0.5, 10, 1)
     for l in snowflake:
         gl.glVertex2f(*l)
     gl.glEnd()
